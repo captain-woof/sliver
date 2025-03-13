@@ -542,6 +542,20 @@ func lookupPrivilegeNameByLUID(luid uint64) (string, string, error) {
 	return syscall.UTF16ToString(nameBuffer), syscall.UTF16ToString(displayNameBuffer), nil
 }
 
+func CheckPriv(privName string) PrivilegeInfo {
+	// Get current privileges
+	privsInfo, _, _, _ := GetPrivs()
+
+	// Check privielge
+	for _, priv := range privsInfo {
+		if priv.Name == privName {
+			return priv
+		}
+	}
+
+	return PrivilegeInfo{}
+}
+
 func GetPrivs() ([]PrivilegeInfo, string, string, error) {
 	// A place to store the process token
 	var tokenHandle windows.Token
