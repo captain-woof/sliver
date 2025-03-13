@@ -58,12 +58,12 @@ func writeGoodBytes(b []byte, pn string, virtualoffset uint32, secname string, v
 	dllOffset := uint(dllBase) + uint(virtualoffset)
 
 	var old uint32
-	e = windows.VirtualProtect(uintptr(dllOffset), uintptr(vsize), windows.PAGE_EXECUTE_READWRITE, &old)
+	e = windows.VirtualProtect(uintptr(dllOffset), uintptr(vsize), windows.PAGE_READWRITE, &old)
 	if e != nil {
 		return e
 	}
 	//{{if .Config.Debug}}
-	log.Println("Made memory map RWX")
+	log.Println("Made memory map RW")
 	//{{end}}
 
 	// vsize should always smaller than len(b)
