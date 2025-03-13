@@ -324,13 +324,12 @@ func StartProcessAsChild(parentPID uint32, exePath string, extraEnv []string) er
 	//
 	// https://devblogs.microsoft.com/oldnewthing/20080314-00/?p=23113
 	//
-	// TODO: try look for something less than SeDebugPrivilege
 
+	// Try enabling SeDebugPrivilege; if it fails, move on
 	disableSeDebug, err := EnableCurrentThreadPrivilege("SeDebugPrivilege")
 	if err != nil {
-		return err
+		defer disableSeDebug()
 	}
-	defer disableSeDebug()
 
 	ph, err := windows.OpenProcess(
 		windows.PROCESS_CREATE_PROCESS|windows.PROCESS_QUERY_INFORMATION|windows.PROCESS_DUP_HANDLE,

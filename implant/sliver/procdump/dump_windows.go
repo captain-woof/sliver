@@ -116,8 +116,11 @@ func (d *WindowsDump) Data() []byte {
 func dumpProcess(pid int32) (ProcessDump, error) {
 	var lpTargetHandle windows.Handle
 	res := &WindowsDump{}
-	if err := priv.SePrivEnable("SeDebugPrivilege"); err != nil {
-		return res, err
+
+	// If SeDebugPrivilege exists, enable it, else move on
+	tokenDebugPriv := priv.CheckPriv("SeDebugPrivilege")
+	if tokenDebugPriv.Name == "SeDebugPrivilege" && !tokenDebugPriv.Enabled {
+		priv.SePrivEnable("SeDebugPrivilege")
 	}
 
 	hProc, err := windows.OpenProcess(syscalls.PROCESS_DUP_HANDLE, false, uint32(pid))
